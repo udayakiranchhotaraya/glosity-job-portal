@@ -15,7 +15,7 @@ const SERVER_URL = `http://localhost:${PORT}`;
         })
         app.listen(PORT, () => console.log(`Server started at ${SERVER_URL}`));
     } catch (error) {
-        console.error(error);
+        console.error(`Connection error: ${error}`);
         process.exit(1);
     }
 })()
