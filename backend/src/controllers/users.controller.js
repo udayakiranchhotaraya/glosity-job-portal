@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const { User } = require('../models');
-const { jwtMiddleware, generateToken } = require('../middlewares/jwt.middleware');
+const { generateToken } = require('../middlewares/jwt.middleware');
 
 async function registerUser (req, res) {
     try {
@@ -14,7 +14,7 @@ async function registerUser (req, res) {
         })
 
         const payload = {
-            userId: user.id,
+            id: user.id,
             isEmployer: false
         };
         const token = generateToken(payload);
@@ -44,7 +44,7 @@ async function loginUser (req, res) {
         }
 
         const payload = {
-            userId: user.id,
+            id: user.id,
             isEmployer: false
         };
         const token = generateToken(payload);
