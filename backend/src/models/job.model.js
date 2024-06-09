@@ -50,15 +50,16 @@ const jobSchema = mongoose.Schema({
         default: true
     },
     applicants : [{
-        applicant : {
+        _id: false,
+        applicantID : {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
-        appliedTime:{
+        appliedAt :{
             type:Date,
             default:Date.now
         },
-    }, {id: false}]
+    }]
 }, {
     timestamps: true
 });

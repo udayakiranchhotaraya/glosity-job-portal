@@ -74,7 +74,7 @@ async function applyJob (req, res) {
             const job = await Job.findOneAndUpdate({ _id: jobId }, {
                 $push : {
                     applicants: {
-                        applicant: id
+                        applicantID: id
                     }
                 }
             }, {

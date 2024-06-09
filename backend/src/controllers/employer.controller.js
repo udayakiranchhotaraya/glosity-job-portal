@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
-const { Company } = require('../models');
+const { Company, Job } = require('../models');
 const { generateToken } = require('../middlewares/jwt.middleware');
 
-const message_403 = "Only Employers can access this route";
+const message_403 = "Unauthorised to access this route";
 
 async function registerEmployer (req, res) {
     try {
@@ -95,8 +95,27 @@ async function addOrUpdateCompanyDetails (req, res) {
     }
 }
 
+async function showJobDetailsAndApplicants (req, res) {
+    if (req.user.isEmployer) {
+        const { id } = req.user;
+        const { jobId } = req.params;
+        const job = await Job.findOne({ _id: jobId, companyID: id});
+        // const job = await Job.aggregate([
+
+        // ]);
+        if (job) {
+            return res.status(200).json({ job : job });
+        } else {
+            return res.status(404).json({ "message" : "No jobs found!" });
+        }
+    } else {
+        return res.status(403).json({ "message" : message_403 });
+    }
+}
+
 module.exports = {
     registerEmployer,
     login,
-    addOrUpdateCompanyDetails
+    addOrUpdateCompanyDetails,
+    showJobDetailsAndApplicants
 }
