@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { User } = require('../models');
+const { User, Job } = require('../models');
 const { generateToken } = require('../middlewares/jwt.middleware');
 
 async function registerUser (req, res) {
@@ -65,7 +65,37 @@ async function loginUser (req, res) {
     }
 }
 
+async function applyJob (req, res) {
+    try {
+        if (!(req.user.isEmployer)) {
+            const { id } = req.user;
+            const { jobId } = req.params;
+
+            const job = await Job.findOneAndUpdate({ _id: jobId }, {
+                $push : {
+                    applicants: {
+                        applicant: id
+                    }
+                }
+            }, {
+                new: true
+            });
+
+            if (job) {
+                return res.status(200).json({ "message" : "Applied to job successfully!" });
+            } else {
+                return res.status(400).json({ "message" : "Some error occurred!" });
+            }
+        } else {
+            return res.status(403).json({ "message" : "Employers cannot apply for jobs!" });
+        }
+    } catch (error) {
+        return res.status(400).json({ "message" : error.message });
+    }
+}
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    applyJob
 }

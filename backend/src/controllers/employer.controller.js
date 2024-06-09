@@ -8,10 +8,6 @@ const message_403 = "Only Employers can access this route";
 async function registerEmployer (req, res) {
     try {
         const { name, email, password } = req.body;
-        // const company = new Company();
-        // company.employer.name = name;
-        // company.employer.email = email;
-        // company.employer.password = password;
         const company = await Company.create({
             employer: {
                 name: name,
@@ -19,7 +15,6 @@ async function registerEmployer (req, res) {
                 password: password
             }
         })
-        // await company.save();
 
         const payload = {
             id: company.id,
@@ -70,7 +65,38 @@ async function login (req, res) {
     }
 }
 
+async function addOrUpdateCompanyDetails (req, res) {
+    if (req.user.isEmployer) {
+        try {
+            const { id } = req.user;
+            const { companyName, companyDescription, numberofEmployees, establishmentDate, location, companyLogo, benefits } = req.body;
+            const companyDetails = await Company.findOneAndUpdate({ _id: id }, {
+                companyName: companyName,
+                companyDescription: companyDescription,
+                numberOfEmployees: numberofEmployees,
+                establishmentDate: establishmentDate,
+                location: location,
+                companyLogo: companyLogo,
+                benefits: benefits,
+            }, {
+                new: true,
+                runValidators: true
+            });
+            if (companyDetails) {
+                return res.status(200).json({ "message" : "Company details updated successfully!" });
+            } else {
+                return res.status(400).json({ "message" : "Some error occurred!" });
+            }
+        } catch (error) {
+            return res.status(400).json({ "message" : error.message });
+        }
+    } else {
+        return res.status(403).json({ "message" : message_403 });
+    }
+}
+
 module.exports = {
     registerEmployer,
-    login
+    login,
+    addOrUpdateCompanyDetails
 }

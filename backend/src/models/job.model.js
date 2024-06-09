@@ -28,7 +28,7 @@ const jobSchema = mongoose.Schema({
         enum: ['remote', 'onsite'],
         required: true
     },
-    responsibilites : {
+    responsibilities : {
         type: String,
         required: true
     },
@@ -36,11 +36,7 @@ const jobSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    CTC : {
-        type: String,
-        required: true
-    },
-    stipend : {
+    salary : {
         type: String,
         required: true
     },
@@ -54,12 +50,18 @@ const jobSchema = mongoose.Schema({
         default: true
     },
     applicants : [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }]
+        applicant : {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        appliedTime:{
+            type:Date,
+            default:Date.now
+        },
+    }, {id: false}]
 }, {
     timestamps: true
 });
 
-const jobModel = mongoose.model('Job', jobSchema);
-module.exports = jobModel;
+const JobModel = mongoose.model('Job', jobSchema);
+module.exports = JobModel;
