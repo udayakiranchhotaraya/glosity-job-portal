@@ -68,5 +68,37 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
+userSchema.pre('save', async function (next) {
+    const user = this;
+
+    // Check if the password is being modified. Hash the password only if the password has been modified
+    if (!(user.isModified('password'))) {
+        return next();
+    }
+
+    try {
+        // Generate Salt
+        const salt = await bcrypt.genSalt(12);
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(user.password, salt);
+
+        // Override the plaintext passwrod with the hash password
+        user.password = String(hashedPassword);
+        next();
+    } catch (error) {
+        return next(error);
+    }
+});
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    try {
+        const isMatch = await bcrypt.compare(candidatePassword, this.password);
+        return isMatch;
+    } catch (error) {
+        throw error;
+    }
+}
+
 const UserModel = mongoose.model('User', userSchema);
 module.exports = UserModel;
