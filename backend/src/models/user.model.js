@@ -64,6 +64,8 @@ const userSchema = new mongoose.Schema({
         enum: ['private', 'public'],
         default: 'public'
     }
+},{
+    timestamps: true
 });
 
 const UserModel = mongoose.model('User', userSchema);
