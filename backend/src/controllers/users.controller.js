@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const { User, Job } = require('../models');
 const { generateToken } = require('../middlewares/jwt.middleware');
 
+const message_403 = "Unauthorized to access this route";
+
 async function registerUser (req, res) {
     try {
         const { name, email, mobile, password } = req.body;
@@ -65,6 +67,52 @@ async function loginUser (req, res) {
     }
 }
 
+async function updateOrAddProfileDetails (req, res) {
+    if (!(req.user.isEmployer)) {
+        try {
+            const { id } = req.user;
+            const { name, email, mobile, profilePictureURL, education, skills, projects, resumeURL } = req.body;
+            const user = await User.findOneAndUpdate({ _id: id }, {
+                name: name,
+                email: email,
+                mobile: mobile,
+                profilePictureURL: profilePictureURL,
+                education: education,
+                skills: skills,
+                projects: projects,
+                resumeURL: resumeURL
+            }, {
+                new: true
+            });
+
+            if (user) {
+                return res.status(200).json({ "message" : "User details updated successfully!" });
+            } else {
+                return res.status(400).json({ "message" : "Some error occurred!" });
+            }
+        } catch (error) {
+            return res.status(400).json({ "message" : error.message });
+        }
+    } else {
+        return res.status(403).json({ "message" : message_403 });
+    }
+}
+
+async function viewProfile (req, res) {
+    if (!(req.user.isEmployer)) {
+        const { id } = req.user;
+        const user = await User.findOne({ _id: id });
+
+        if (user) {
+            return res.status(200).json({ "user" : user });
+        } else {
+            return res.status(400).json({ "message" : "Some error occurred!" });
+        }
+    } else {
+        return res.status(403).json({ "message" : message_403 });
+    }
+}
+
 async function applyJob (req, res) {
     try {
         if (!(req.user.isEmployer)) {
@@ -108,9 +156,27 @@ async function appliedJobs (req, res) {
     }
 }
 
+async function deleteProfile (req, res) {
+    if (!(req.user.isEmployer)) {
+        const { id } = req.user;
+        const user = await User.findOneAndDelete({ _id: id });
+
+        if (user) {
+            return res.status(200).json({ "message" : "User profile deleted successfully!" });
+        } else {
+            return res.status(400).json({ "message" : "Some error occurred!" });
+        }
+    } else {
+        return res.status(403).json({ "message" : message_403 });
+    }
+}
+
 module.exports = {
     registerUser,
     loginUser,
     applyJob,
-    appliedJobs
+    appliedJobs,
+    updateOrAddProfileDetails,
+    viewProfile,
+    deleteProfile
 }
