@@ -6,12 +6,14 @@ const {
     registerEmployer,
     login,
     addOrUpdateCompanyDetails,
-    showJobDetailsAndApplicants
+    getJobDetails,
+    getApplicants
 } = require('../controllers/employer.controller');
 
 const EmployerRouter = express.Router();
 
-EmployerRouter.get('/showJobDetailsAndApplicants/:jobId', jwtMiddleware, showJobDetailsAndApplicants);
+EmployerRouter.get('/job/:jobId/details', jwtMiddleware, getJobDetails);
+EmployerRouter.get('/job/:jobId/applicants', jwtMiddleware, getApplicants);
 EmployerRouter.post('/register', registerEmployer);
 EmployerRouter.post('/login', login);
 EmployerRouter.put('/addOrUpdateCompanyDetails', jwtMiddleware, addOrUpdateCompanyDetails);

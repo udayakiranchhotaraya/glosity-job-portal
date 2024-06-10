@@ -55,7 +55,7 @@ const jobSchema = mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
-        appliedAt :{
+        appliedAt : {
             type:Date,
             default:Date.now
         },

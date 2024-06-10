@@ -46,7 +46,7 @@ async function createJob (req, res) {
 
 async function getJobs (req, res) {
     try {
-        const jobs = await Job.find(req.query);
+        const jobs = await Job.find(req.query, {applicants: 0});
         if (jobs) {
             return res.status(200).json({ jobs: jobs });
         } else {
