@@ -117,12 +117,9 @@ async function getApplicants (req, res) {
         const job = await Job.findOne({ _id: jobId, companyID: id});
         const applicants = await Promise.all(job.applicants.map(async (currApplicant) => {
             // console.log(currApplicant);
-            const applicant = await User.findOne({ _id: currApplicant.applicantID }, {password: 0});
+            const applicant = await User.findOne({ _id: currApplicant.applicantID }, {password: 0}).lean();
             if (applicant) {
-                console.log(currApplicant.appliedAt);
-                applicant.appliedAt = currApplicant.appliedAt
-                console.log(applicant.appliedAt, applicant);
-                return applicant;
+                return { ...applicant, appliedAt: currApplicant.appliedAt};
             }
             return null;
         }));
