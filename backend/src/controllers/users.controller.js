@@ -94,8 +94,23 @@ async function applyJob (req, res) {
     }
 }
 
+async function appliedJobs (req, res) {
+    try {
+        const { id } = req.user;
+        const jobs = await Job.find({ "applicants.applicantID" : id }, {applicants: 0});
+        if (jobs) {
+            return res.status(200).json({ "Applied Jobs" : jobs });
+        } else {
+            return res.status(400).json({ "message" : "Some error occurred!" });
+        }
+    } catch (error) {
+        return res.status(400).json({ "message" : error.message });
+    }
+}
+
 module.exports = {
     registerUser,
     loginUser,
-    applyJob
+    applyJob,
+    appliedJobs
 }
